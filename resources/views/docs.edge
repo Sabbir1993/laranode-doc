@@ -1,0 +1,1998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaraNode Documentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #F05340;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --sidebar-width: 280px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+        aside {
+            width: var(--sidebar-width);
+            background: rgba(15, 23, 42, 0.95);
+            border-right: 1px solid var(--glass-border);
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        .logo { font-size: 1.5rem; font-weight: 800; margin-bottom: 2rem; }
+        .logo span { color: var(--primary); }
+        nav h3 { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); margin: 1.5rem 0 0.5rem; letter-spacing: 1px; }
+        nav ul { list-style: none; }
+        nav a { display: block; padding: 0.5rem 0; color: #cbd5e1; text-decoration: none; font-size: 0.95rem; transition: color 0.2s; }
+        nav a:hover { color: var(--primary); }
+        nav a.active { color: var(--primary); font-weight: 600; }
+
+        main { flex: 1; padding: 4rem 6rem; max-width: 1000px; margin: 0 auto; }
+        section { margin-bottom: 6rem; scroll-margin-top: 4rem; }
+        h1 { font-size: 3rem; margin-bottom: 1.5rem; font-weight: 800; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem; }
+        h2 { font-size: 2rem; margin: 3rem 0 1rem; color: var(--primary); font-weight: 700; }
+        h3 { font-size: 1.25rem; margin: 2rem 0 1rem; color: #fff; }
+        p { margin-bottom: 1.5rem; color: #cbd5e1; font-size: 1.1rem; }
+        pre {
+            background: #000;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border: 1px solid var(--glass-border);
+        }
+        code { font-family: 'Fira Code', monospace; font-size: 0.9rem; color: #e2e8f0; }
+        .highlight { color: var(--primary); font-weight: 600; }
+
+        .feature-card h4 { margin-bottom: 0.5rem; color: #fff; }
+        .feature-card p { font-size: 0.95rem; margin-bottom: 0; }
+
+        .rule-card {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            scroll-margin-top: 5rem;
+        }
+        .rule-card h4 {
+            color: var(--primary);
+            font-family: 'Fira Code', monospace;
+            font-size: 1.2rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+        }
+        .rule-card h4::before {
+            content: '#';
+            margin-right: 0.5rem;
+            opacity: 0.5;
+        }
+        .rule-card .meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Info / warning / tip boxes */
+        .info-box, .warning-box, .tip-box {
+            padding: 1rem 1.25rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            font-size: 0.95rem;
+            border-left: 4px solid;
+        }
+        .info-box    { background: rgba(59,130,246,0.1); border-color: #3b82f6; color: #93c5fd; }
+        .warning-box { background: rgba(245,158,11,0.1); border-color: #f59e0b; color: #fcd34d; }
+        .tip-box     { background: rgba(16,185,129,0.1); border-color: #10b981; color: #6ee7b7; }
+
+        /* Method badge */
+        .badge {
+            display: inline-block;
+            padding: 0.15rem 0.55rem;
+            border-radius: 0.3rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            font-family: 'Fira Code', monospace;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+        .badge-get    { background: #1d4ed8; color: #bfdbfe; }
+        .badge-post   { background: #166534; color: #bbf7d0; }
+        .badge-put    { background: #92400e; color: #fef3c7; }
+        .badge-delete { background: #9f1239; color: #fecdd3; }
+
+        /* Docs table */
+        table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.95rem; }
+        th { text-align: left; padding: 0.75rem 1rem; background: rgba(30,41,59,0.8); color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+        td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--glass-border); color: #cbd5e1; vertical-align: top; }
+        tr:last-child td { border-bottom: none; }
+        td code { background: rgba(30,41,59,0.8); padding: 0.1rem 0.4rem; border-radius: 0.25rem; font-size: 0.85rem; }
+
+        /* Two-col layout */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1.5rem 0; }
+        .card { background: rgba(30,41,59,0.5); border: 1px solid var(--glass-border); border-radius: 0.75rem; padding: 1.25rem; }
+        .card h4 { color: var(--primary); margin-bottom: 0.5rem; font-size: 1rem; }
+        .card p { font-size: 0.9rem; margin: 0; color: var(--text-muted); }
+
+        /* Search box */
+        .search-wrap { margin-bottom: 1.5rem; }
+        .search-wrap input {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            background: rgba(30,41,59,0.9);
+            border: 1px solid var(--glass-border);
+            border-radius: 0.5rem;
+            color: #f1f5f9;
+            font-size: 0.875rem;
+            outline: none;
+        }
+        .search-wrap input::placeholder { color: var(--text-muted); }
+        .search-wrap input:focus { border-color: var(--primary); }
+
+        @media (max-width: 1000px) {
+            aside { display: none; }
+            main { padding: 2rem; }
+            .two-col { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <aside>
+        <div class="logo">Lara<span>Node</span></div>
+        <div class="search-wrap">
+            <input type="text" id="doc-search" placeholder="Search docs…" />
+        </div>
+        <nav id="sidebar-nav">
+            <h3>Getting Started</h3>
+            <ul>
+                <li><a href="#introduction">Introduction</a></li>
+                <li><a href="#installation">Installation</a></li>
+            </ul>
+            <h3>Architecture</h3>
+            <ul>
+                <li><a href="#service-providers">Service Providers</a></li>
+                <li><a href="#facades">Facades</a></li>
+                <li><a href="#helpers">Helpers</a></li>
+            </ul>
+            <h3>Routing &amp; HTTP</h3>
+            <ul>
+                <li><a href="#routing">Routing</a></li>
+                <li><a href="#controllers">Controllers</a></li>
+                <li><a href="#middleware">Middleware</a></li>
+                <li><a href="#validation">Validation</a></li>
+                <li><a href="#api-resources">API Resources</a></li>
+            </ul>
+            <h3>Database</h3>
+            <ul>
+                <li><a href="#loquent">Loquent ORM</a></li>
+                <li><a href="#query-builder">Query Builder</a></li>
+                <li><a href="#migrations">Migrations &amp; Schema</a></li>
+            </ul>
+            <h3>Frontend</h3>
+            <ul>
+                <li><a href="#templating">Edge Templating</a></li>
+                <li><a href="#inertia">Inertia.js (SPAs)</a></li>
+                <li><a href="#localization">Localization</a></li>
+            </ul>
+            <h3>Security</h3>
+            <ul>
+                <li><a href="#authentication">Authentication</a></li>
+                <li><a href="#authorization">Authorization</a></li>
+                <li><a href="#security">CSRF &amp; CORS</a></li>
+            </ul>
+            <h3>Services</h3>
+            <ul>
+                <li><a href="#events">Events &amp; Listeners</a></li>
+                <li><a href="#broadcasting">Broadcasting</a></li>
+                <li><a href="#queues">Queues</a></li>
+                <li><a href="#cache">Cache</a></li>
+                <li><a href="#storage">Storage / Filesystem</a></li>
+                <li><a href="#mail">Mail</a></li>
+                <li><a href="#notifications">Notifications</a></li>
+            </ul>
+            <h3>Monitoring &amp; Errors</h3>
+            <ul>
+                <li><a href="#logging">Logging</a></li>
+                <li><a href="#log-viewer">Log Viewer</a></li>
+                <li><a href="#exceptions">Exception Handling</a></li>
+            </ul>
+            <h3>CLI &amp; Dev Tools</h3>
+            <ul>
+                <li><a href="#artisan">Artisan CLI</a></li>
+                <li><a href="#tinker">Tinker REPL</a></li>
+                <li><a href="#testing">Testing</a></li>
+                <li><a href="#performance">Performance</a></li>
+                <li><a href="#http-client">HTTP Client</a></li>
+                <li><a href="#process">The Lifecycle</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main>
+
+        <!-- GETTING STARTED -->
+        <section id="introduction">
+            <h1>Introduction</h1>
+            <p>Welcome to the official <span class="highlight">LaraNode</span> documentation. LaraNode is a Node.js framework crafted for developers who love the elegance of Laravel but want the speed and ecosystem of JavaScript.</p>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>🏛️ Expressive Architecture</h4>
+                    <p>Designed to be a 1:1 mirror of Laravel's file structure and patterns.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🧩 Dependency Injection</h4>
+                    <p>Powerful Service Container at the heart of the framework.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="installation">
+            <h2>Installation</h2>
+            <p>Get started by creating your first LaraNode project using our CLI.</p>
+            <pre><code># Install laranode-cli globally
+npm install -g laranode-cli
+
+# Create a new project
+laranode new my-app</code></pre>
+            <p>Alternatively, clone the skeleton directly:</p>
+            <pre><code>git clone https://github.com/laranode/skeleton.git my-app
+cd my-app
+npm install
+node artisan serve</code></pre>
+        </section>
+
+        <!-- ARCHITECTURE -->
+        <section id="service-providers">
+            <h2>Service Providers</h2>
+            <p>Service Providers are the central place of all LaraNode application bootstrapping. Your own application, as well as all of LaraNode's core services, are bootstrapped via service providers. Every provider extends the base <code>ServiceProvider</code> class and has two methods: <code>register()</code> and <code>boot()</code>.</p>
+
+            <h3>The Register Method</h3>
+            <p>The <code>register()</code> method is for binding things into the service container. You should never attempt to register any event listeners, routes, or any other piece of functionality within <code>register()</code>.</p>
+            <pre><code>const ServiceProvider = use('laranode/Support/ServiceProvider');
+
+class AppServiceProvider extends ServiceProvider {
+    register() {
+        // Bind a singleton into the container
+        this.app.singleton('analytics', function (app) {
+            return new AnalyticsService(app.make('config').get('analytics'));
+        });
+    }
+}</code></pre>
+
+            <h3>The Boot Method</h3>
+            <p>The <code>boot()</code> method is called after all providers have been registered. This is where you should register macros, event listeners, global helpers, or any other bootstrap logic.</p>
+            <pre><code>const Http = use('laranode/Support/Facades/Http');
+
+class AppServiceProvider extends ServiceProvider {
+    boot() {
+        // Register HTTP macros
+        Http.macro('github', function () {
+            return this.withBaseUrl('https://api.github.com')
+                .withHeaders({ 'Accept': 'application/vnd.github.v3+json' });
+        });
+
+        // Register global helpers
+        global.formatCurrency = (amount) => '$' + parseFloat(amount).toFixed(2);
+    }
+}</code></pre>
+
+            <h3>RouteServiceProvider</h3>
+            <p>The <code>RouteServiceProvider</code> (located at <code>app/Providers/RouteServiceProvider.js</code>) manages all route file loading. You can add custom route files here.</p>
+            <pre><code>class RouteServiceProvider extends ServiceProvider {
+    configureRoutes() {
+        const router = this.app.make('router');
+
+        // Web routes (session, CSRF)
+        router.group({ middleware: ['web'] }, () => {
+            this.loadRouteFile('routes/web.js');
+        });
+
+        // API routes (stateless, /api prefix)
+        router.group({ prefix: '/api', middleware: ['api'] }, () => {
+            this.loadRouteFile('routes/api.js');
+        });
+
+        // Custom route files
+        router.group({ prefix: '/admin', middleware: ['web', 'auth'] }, () => {
+            this.loadRouteFile('routes/admin.js');
+        });
+    }
+}</code></pre>
+
+            <h3>Registering Providers</h3>
+            <p>All service providers are registered in the <code>providers</code> array within <code>config/app.js</code>. Framework providers load first, then your application providers.</p>
+            <pre><code>// config/app.js
+providers: [
+    // Framework Service Providers...
+    require(base_path('vendor/laranode/framework/src/Http/HttpServiceProvider')),
+    require(base_path('vendor/laranode/framework/src/Foundation/Providers/RouteServiceProvider')),
+    // ...
+
+    // Application Service Providers...
+    require(base_path('app/Providers/AppServiceProvider')),
+    require(base_path('app/Providers/RouteServiceProvider')),
+]</code></pre>
+        </section>
+
+        <section id="facades">
+            <h2>Facades</h2>
+            <p>Facades provide a static-like interface to services that are available in the application's service container. Think of them as convenient shortcuts — instead of manually resolving services from the container, you can call methods directly on the Facade class.</p>
+            <pre><code>// All available Facades
+const Route  = use('laranode/Support/Facades/Route');   // Routing
+const Auth   = use('laranode/Support/Facades/Auth');     // Authentication
+const DB     = use('laranode/Support/Facades/DB');       // Database
+const Hash   = use('laranode/Support/Facades/Hash');     // Hashing
+const Crypt  = use('laranode/Support/Facades/Crypt');    // Encryption
+const Config = use('laranode/Support/Facades/Config');   // Configuration
+const Log    = use('laranode/Support/Facades/Log');      // Logging
+const Lang   = use('laranode/Support/Facades/Lang');     // Translation
+const Http   = use('laranode/Support/Facades/Http');     // HTTP Client</code></pre>
+            <p>Each Facade class resolves its underlying service from the IoC container. For example, <code>Http</code> resolves the HTTP client factory, so <code>Http.get()</code> calls <code>get()</code> on the resolved instance. This means you can use Facades anywhere — controllers, service providers, route files, etc.</p>
+        </section>
+
+        <section id="helpers">
+            <h2>Global Helpers</h2>
+            <p>LaraNode provides a set of global helper functions available everywhere — controllers, service providers, views, and even the CLI. No imports needed.</p>
+            <pre><code>// Path helpers
+base_path('config/app.js')       // /my-app/config/app.js
+app_path('Models/User.js')       // /my-app/app/Models/User.js
+config_path()                    // /my-app/config
+database_path('migrations')      // /my-app/database/migrations
+public_path('css/app.css')       // /my-app/public/css/app.css
+resource_path('views')           // /my-app/resources/views
+storage_path('logs')             // /my-app/storage/logs
+
+// Configuration &amp; Environment
+env('APP_DEBUG', false)          // Read .env variables
+config('app.name', 'LaraNode')   // Read config values
+
+// URL helpers
+url('/users/1')                  // http://localhost:3333/users/1
+asset('css/app.css')             // http://localhost:3333/css/app.css
+route('login')                   // URL for named route 'login'
+
+// Utilities
+collect([1,2,3])                 // Create a Collection
+use('laranode/Support/Facades/DB') // Resolve a module (like require)
+dd(variable)                     // Dump &amp; die (debug)
+dump(variable)                   // Dump (console.log)</code></pre>
+
+            <h3>Custom Helpers</h3>
+            <p>Register your own global helpers in <code>AppServiceProvider</code> or a dedicated <code>app/helpers.js</code> file. They will be available everywhere, including Edge views.</p>
+            <pre><code>// app/helpers.js
+global.formatCurrency = (amount) => '$' + parseFloat(amount).toFixed(2);
+global.truncate = (str, len = 50) => str.length > len ? str.slice(0, len) + '...' : str;
+
+// app/Providers/AppServiceProvider.js
+boot() {
+    require(base_path('app/helpers'));
+}
+
+// Then use anywhere, including views:
+// &#123;&#123; formatCurrency(product.price) &#125;&#125;</code></pre>
+        </section>
+
+        <!-- BASICS -->
+        <section id="routing">
+            <h2>Routing</h2>
+            <p>All LaraNode routes are defined in the <code>routes/</code> directory. Routes in <code>routes/web.js</code> are assigned the <code>web</code> middleware group (session, CSRF). Routes in <code>routes/api.js</code> are stateless and prefixed with <code>/api</code>. Route files are loaded by your <code>RouteServiceProvider</code>.</p>
+
+            <h3>Basic Routes</h3>
+            <pre><code>const Route = use('laranode/Support/Facades/Route');
+
+// Closure route
+Route.get('/welcome', (req, res) => 'Hello World');
+
+// Controller route
+Route.get('/profile', 'UserController&#64;show');
+Route.post('/profile', 'UserController&#64;update');
+Route.put('/users/{id}', 'UserController&#64;update');
+Route.delete('/users/{id}', 'UserController&#64;destroy');</code></pre>
+
+            <h3>Named Routes</h3>
+            <p>Named routes allow you to generate URLs or redirects using <code>route('name')</code>.</p>
+            <pre><code>Route.get('/login', 'AuthController&#64;showForm').name('login');
+
+// Generate URL: route('login') => '/login'</code></pre>
+
+            <h3>Route Groups</h3>
+            <p>Route groups allow you to share attributes like middleware and URL prefixes across multiple routes.</p>
+            <pre><code>Route.group({ prefix: '/admin', middleware: ['auth'] }, () => {
+    Route.get('/dashboard', 'AdminController&#64;index');
+    Route.get('/users', 'AdminController&#64;users');
+});</code></pre>
+
+            <h3>Route Parameters</h3>
+            <p>LaraNode automatically parses route parameters and makes them available on <code>req.params</code>.</p>
+            <pre><code>Route.get('/users/{id}', (req, res) => {
+    return res.json({ userId: req.params.id });
+});</code></pre>
+
+            <h3>Invokable Controllers</h3>
+            <p>If a controller is only responsible for a single action, you may implement the <code>__invoke</code> method and define the route without a method name.</p>
+            <pre><code>// app/Http/Controllers/UpdateProfile.js
+class UpdateProfile extends Controller {
+    async __invoke(req, res) {
+        // ...
+    }
+}
+
+// routes/web.js
+Route.post('/profile', 'UpdateProfile');</code></pre>
+        </section>
+
+        <section id="controllers">
+            <h2>Controllers</h2>
+            <p>Controllers group related request handling logic into a single class. They reside in <code>app/Http/Controllers/</code>. All controllers extend the base <code>Controller</code> class.</p>
+            <pre><code>const Controller = use('laranode/Routing/Controller/Controller');
+
+class UserController extends Controller {
+    // GET /users
+    async index(req, res) {
+        const users = await User.all();
+        return res.view('users.index', { users });
+    }
+
+    // POST /users
+    async store(req, res) {
+        const user = await User.create(req.only(['name', 'email']));
+        return res.redirect('/users');
+    }
+
+    // GET /users/:id
+    async show(req, res) {
+        const user = await User.findOrFail(req.params.id);
+        await user.load('posts');  // Load relations before view
+        return res.view('users.show', { user });
+    }
+}
+
+module.exports = UserController;</code></pre>
+
+            <h3>FormRequest Validation</h3>
+            <p>Attach FormRequests to controller methods for automatic validation before the method runs.</p>
+            <pre><code>class TodoController extends Controller {
+    static get requests() {
+        return {
+            store: use('App/Http/Requests/StoreTodoRequest')
+        };
+    }
+
+    // req.all() is already validated when this runs
+    async store(req, res) {
+        await Todo.create(req.all());
+        return res.redirect('/');
+    }
+}</code></pre>
+        </section>
+
+        <section id="middleware">
+            <h2>Middleware</h2>
+            <p>Middleware provides a convenient mechanism for inspecting and filtering HTTP requests entering your application.</p>
+            <pre><code>class EnsureTokenIsValid {
+    async handle(req, res, next) {
+        if (req.input('token') !== 'secret') {
+            return res.redirect('home');
+        }
+        return next();
+    }
+}</code></pre>
+        </section>
+
+        <section id="validation">
+            <h2>The Validation Engine</h2>
+            <p>LaraNode features an extremely powerful, asynchronous validation engine completely matching Laravel's capabilities.</p>
+            
+            <h3>Validating FormRequests</h3>
+            <p>The cleanest way to validate data is by utilizing FormRequests.</p>
+            <pre><code>// In app/Http/Controllers/TodoController.js
+static get requests() {
+    return {
+        store: use('app/Http/Requests/Todo/StoreTodoRequest')
+    };
+}
+
+async store(req, res) {
+    await Todo.create(req.all());
+    return res.redirect('/');
+}</code></pre>
+
+            <h3>Validation Rules Reference</h3>
+            <p>Below is a comprehensive list of all available validation rules.</p>
+
+            <div class="rule-group">
+                <div class="rule-card" id="rule-accepted">
+                    <h4>accepted</h4>
+                    <div class="meta">Boolean / Presence</div>
+                    <p>The field under validation must be <code>true</code>, <code>"true"</code>, <code>1</code>, <code>"1"</code>, <code>"yes"</code>, or <code>"on"</code>.</p>
+                    <pre><code>'terms' => 'accepted'</code></pre>
+                </div>
+
+                <div class="rule-card" id="rule-accepted_if">
+                    <h4>accepted_if:anotherfield,value</h4>
+                    <div class="meta">Conditional</div>
+                    <p>The field under validation must be "accepted" if the another field is equal to a specified value.</p>
+                    <pre><code>'terms' => 'accepted_if:is_adult,true'</code></pre>
+                </div>
+
+                <div class="rule-card" id="rule-active_url">
+                    <h4>active_url</h4>
+                    <div class="meta">String / Network</div>
+                    <p>The field under validation must have a valid A or AAAA record according to the <code>dns.lookup</code> Node.js function.</p>
+                    <pre><code>'website' => 'active_url'</code></pre>
+                </div>
+
+                <div class="rule-card" id="rule-after">
+                    <h4>after:date</h4>
+                    <div class="meta">Date</div>
+                    <p>The field under validation must be a value after a given date.</p>
+                    <pre><code>'start_date' => 'after:2025-01-01'</code></pre>
+                </div>
+
+                <div class="rule-card" id="rule-alpha">
+                    <h4>alpha</h4>
+                    <div class="meta">String</div>
+                    <p>The field under validation must be entirely alphabetic characters.</p>
+                    <pre><code>'name' => 'alpha'</code></pre>
+                </div>
+
+                <div class="rule-card" id="rule-boolean">
+                    <h4>boolean</h4>
+                    <div class="meta">Type</div>
+                    <p>The field under validation must be able to be cast as a boolean. Accepted input are <code>true</code>, <code>false</code>, <code>1</code>, <code>0</code>, <code>"1"</code>, and <code>"0"</code>.</p>
+                    <pre><code>'is_admin' => 'boolean'</code></pre>
+                </div>
+
+                <div class="rule-card" id="rule-confirmed">
+                    <h4>confirmed</h4>
+                    <div class="meta">Cross-Field</div>
+                    <p>The field under validation must have a matching field of <code>{field}_confirmation</code>.</p>
+                    <pre><code>'password' => 'required|confirmed'</code></pre>
+                </div>
+
+                <div class="rule-card" id="rule-current_password">
+                    <h4>current_password</h4>
+                    <div class="meta">Authentication</div>
+                    <p>The field under validation must match the authenticated user's password.</p>
+                    <pre><code>'old_password' => 'current_password'</code></pre>
+                </div>
+
+                <div class="rule-card" id="rule-date">
+                    <h4>date</h4>
+                    <div class="meta">Type</div>
+                    <p>The field under validation must be a valid, non-relative date according to the <code>Date.parse</code> function.</p>
+                    <pre><code>'birthday' => 'date'</code></pre>
+                </div>
+
+                <div class="rule-card" id="rule-distinct">
+                    <h4>distinct</h4>
+                    <div class="meta">Array</div>
+                    <p>When validating an array, the field under validation must not have any duplicate values.</p>
+                    <pre><code>'tags.*' => 'distinct'</code></pre>
+                </div>
+
+                <div class="rule-card" id="rule-email">
+                    <h4>email</h4>
+                    <div class="meta">String</div>
+                    <p>The field under validation must be formatted as an email address.</p>
+                    <pre><code>'email' => 'required|email'</code></pre>
+                </div>
+
+                <div class="rule-card" id="rule-exists">
+                    <h4>exists:table,column</h4>
+                    <div class="meta">Database</div>
+                    <p>The field under validation must exist on a given database table.</p>
+                    <pre><code>'user_id' => 'exists:users,id'</code></pre>
+                </div>
+
+                <div class="rule-card" id="rule-image">
+                    <h4>image</h4>
+                    <div class="meta">File</div>
+                    <p>The file under validation must be an image (jpeg, png, bmp, gif, svg, or webp).</p>
+                    <pre><code>'avatar' => 'image'</code></pre>
+                </div>
+
+                <div class="rule-card" id="rule-max">
+                    <h4>max:value</h4>
+                    <div class="meta">Size</div>
+                    <p>The field under validation must be less than or equal to a maximum value. Strings, numerics, and arrays are evaluated in the same fashion as the <code>size</code> rule.</p>
+                    <pre><code>'bio' => 'max:500'</code></pre>
+                </div>
+
+                <div class="rule-card" id="rule-min">
+                    <h4>min:value</h4>
+                    <div class="meta">Size</div>
+                    <p>The field under validation must have a minimum value.</p>
+                    <pre><code>'password' => 'min:8'</code></pre>
+                </div>
+
+                <div class="rule-card" id="rule-nullable">
+                    <h4>nullable</h4>
+                    <div class="meta">Utility</div>
+                    <p>The field under validation may be <code>null</code>. This is particularly useful when validating primitive types such as strings and integers that can contain <code>null</code> values.</p>
+                    <pre><code>'middle_name' => 'nullable|string'</code></pre>
+                </div>
+
+                <div class="rule-card" id="rule-numeric">
+                    <h4>numeric</h4>
+                    <div class="meta">Type</div>
+                    <p>The field under validation must be numeric.</p>
+                    <pre><code>'price' => 'numeric'</code></pre>
+                </div>
+
+                <div class="rule-card" id="rule-regex">
+                    <h4>regex:pattern</h4>
+                    <div class="meta">String</div>
+                    <p>The field under validation must match the given regular expression.</p>
+                    <pre><code>'slug' => 'regex:/^[a-z0-9-]+$/'</code></pre>
+                </div>
+
+                <div class="rule-card" id="rule-required">
+                    <h4>required</h4>
+                    <div class="meta">Presence</div>
+                    <p>The field under validation must be present in the input data and not empty.</p>
+                    <pre><code>'title' => 'required'</code></pre>
+                </div>
+
+                <div class="rule-card" id="rule-unique">
+                    <h4>unique:table,column,ignoreId</h4>
+                    <div class="meta">Database</div>
+                    <p>The field under validation must not exist within the given database table.</p>
+                    <pre><code>'email' => 'unique:users,email'</code></pre>
+                </div>
+
+                <div class="rule-card" id="rule-url">
+                    <h4>url</h4>
+                    <div class="meta">String</div>
+                    <p>The field under validation must be a valid URL.</p>
+                    <pre><code>'website' => 'url'</code></pre>
+                </div>
+
+                <p><em>...and dozens more including <code>prohibited</code>, <code>present</code>, <code>missing</code>, <code>ulid</code>, <code>uuid</code>, <code>mac_address</code>, etc. matching Laravel's exact behavior.</em></p>
+            </div>
+        </section>
+
+        <section id="api-resources">
+            <h2>API Resources</h2>
+            <p>LaraNode's API resources allow you to expressively and easily transform your models and model collections into JSON.</p>
+            <pre><code>// app/Http/Resources/UserResource.js
+const JsonResource = use('laranode/Http/Resources/JsonResource');
+
+class UserResource extends JsonResource {
+    toArray(request) {
+        return {
+            id: this.id,
+            name: this.name,
+            email: this.email,
+            posts: PostResource.collection(this.whenLoaded('posts')),
+            created_at: this.created_at,
+        };
+    }
+}</code></pre>
+
+            <h3>Conditional Relationships</h3>
+            <p>The <code>whenLoaded</code> method may be used to conditionally include a relationship only if it has already been loaded on the model.</p>
+            <pre><code>'posts' => PostResource.collection(this.whenLoaded('posts'))</code></pre>
+
+            <h3>Conditional Attributes</h3>
+            <p>The <code>when</code> method may be used to conditionally include an attribute based on a condition.</p>
+            <pre><code>'is_admin' => this.when(request.user().isAdmin(), true)</code></pre>
+
+            <h3>Merging Attributes</h3>
+            <p>The <code>mergeWhen</code> method may be used to conditionally merge an object into the resource response.</p>
+            <pre><code>...this.mergeWhen(request.user().isAdmin(), {
+    secret_key: '...',
+    access_logs: '...'
+})</code></pre>
+        </section>
+
+        <!-- DATABASE -->
+        <section id="loquent">
+            <h2>Loquent ORM</h2>
+            <p>Loquent is our "Active Record" implementation. It makes interacting with your database as simple as writing English.</p>
+            <pre><code>const Model = use('laranode/Database/Loquent/Model');
+
+class User extends Model {
+    static table = 'users'; // default
+    static fillable = ['name', 'email', 'password'];
+
+    posts() {
+        return this.hasMany(use('App/Models/Post'), 'user_id');
+    }
+}
+
+// Fetch all admins
+const admins = await User.where('role', 'admin').get();</code></pre>
+
+            <h3>Loading Relations</h3>
+            <p>Use <code>with()</code> for eager loading at query time, or <code>load()</code> / <code>loadMissing()</code> to explicitly load relations on an existing model instance before passing to a view.</p>
+            <pre><code>// Eager loading at query time (most efficient for lists)
+const users = await User.with('posts', 'roles').get();
+
+// Explicit loading on an instance (useful before views)
+const user = await User.find(1);
+await user.load('posts', 'roles');         // Always (re)loads from DB
+await user.loadMissing('comments');        // Only loads if not loaded yet
+
+// Then use in your view: &#123;&#123; user.posts &#125;&#125;, &#123;&#123; user.roles &#125;&#125;</code></pre>
+        </section>
+
+        <section id="query-builder">
+            <h2>Query Builder</h2>
+            <p>LaraNode's database query builder provides a convenient, fluent interface to creating and running database queries.</p>
+            <pre><code>const DB = use('laranode/Support/Facades/DB');
+
+const users = await DB.table('users')
+    .where('votes', '>', 100)
+    .get();</code></pre>
+
+            <h3>Subquery Joins</h3>
+            <p>Use <code>joinSub()</code>, <code>leftJoinSub()</code>, and <code>rightJoinSub()</code> to join against subqueries. Supports both simple and closure-based multi-condition joins.</p>
+            <pre><code>// Build a subquery
+const latestPosts = DB.table('posts')
+    .select('user_id')
+    .selectRaw('MAX(created_at) as last_post')
+    .groupBy('user_id');
+
+// Simple joinSub
+const users = await DB.table('users')
+    .joinSub(latestPosts, 'lp', 'users.id', '=', 'lp.user_id')
+    .select('users.*', 'lp.last_post')
+    .get();
+
+// Closure-based multi-condition joinSub
+await DB.table('users')
+    .joinSub(latestPosts, 'lp', (join) => {
+        join.on('users.id', '=', 'lp.user_id')
+            .on('users.tenant_id', '=', 'lp.tenant_id')
+            .where('lp.total', '>', 100);
+    })
+    .get();
+
+// leftJoinSub / rightJoinSub
+await DB.table('users')
+    .leftJoinSub(orderTotals, 'summary', 'users.id', '=', 'summary.user_id')
+    .get();</code></pre>
+
+            <h3>Closure-Based Joins</h3>
+            <p>Existing <code>join()</code>, <code>leftJoin()</code>, and <code>rightJoin()</code> also support closures for multiple ON conditions.</p>
+            <pre><code>await User.join('posts', (join) => {
+    join.on('users.id', '=', 'posts.user_id')
+        .on('users.tenant_id', '=', 'posts.tenant_id')
+        .where('posts.published', true)
+        .whereNotNull('posts.title');
+}).get();</code></pre>
+        </section>
+
+        <section id="migrations">
+            <h2>Migrations & Schema</h2>
+            <p>Migrations are like version control for your database, allowing your team to modify and share the application's database schema.</p>
+            <pre><code>const Schema = use('laranode/Support/Facades/Schema');
+
+async up() {
+    await Schema.create('users', (table) => {
+        table.id();
+        table.string('email').unique();
+        table.timestamps();
+    });
+}</code></pre>
+        </section>
+
+        <!-- THE FRONTEND -->
+        <section id="templating">
+            <h2>Edge Templating</h2>
+            <p>Edge is LaraNode's Blade-like templating engine. Templates use the <code>.edge</code> extension and reside in <code>resources/views/</code>. Edge supports layouts, partials, control structures, and all global helper functions.</p>
+
+            <h3>Layouts &amp; Sections</h3>
+            <pre><code>&lt;!-- resources/views/layouts/app.edge --&gt;
+&lt;html&gt;
+&lt;head&gt;&lt;title&gt;&#64;yield('title') - &#123;&#123; config('app.name') &#125;&#125;&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+    &#64;yield('content')
+&lt;/body&gt;
+&lt;/html&gt;
+
+&lt;!-- resources/views/welcome.edge --&gt;
+&#64;extends('layouts.app')
+&#64;section('title', 'Home')
+&#64;section('content')
+    &lt;h1&gt;Welcome, &#123;&#123; user.name &#125;&#125;&lt;/h1&gt;
+&#64;endsection</code></pre>
+
+            <h3>Control Structures</h3>
+            <pre><code>&#64;if(user.isAdmin)
+    &lt;span&gt;Admin Badge&lt;/span&gt;
+&#64;endif
+
+&#64;foreach(posts as post)
+    &lt;p&gt;&#123;&#123; post.title &#125;&#125;&lt;/p&gt;
+&#64;endforeach
+
+&#64;forelse(notifications as note)
+    &lt;p&gt;&#123;&#123; note.message &#125;&#125;&lt;/p&gt;
+&#64;empty
+    &lt;p&gt;No notifications.&lt;/p&gt;
+&#64;endforelse</code></pre>
+
+            <h3>Helpers in Views</h3>
+            <p>All global helpers (<code>config()</code>, <code>route()</code>, <code>url()</code>, <code>asset()</code>, and your custom helpers) are available directly in Edge templates.</p>
+            <pre><code>&lt;link href="&#123;&#123; asset('css/app.css') &#125;&#125;" rel="stylesheet"&gt;
+&lt;a href="&#123;&#123; route('login') &#125;&#125;"&gt;Login&lt;/a&gt;
+&lt;p&gt;&#123;&#123; formatCurrency(product.price) &#125;&#125;&lt;/p&gt;</code></pre>
+
+            <h3>Using Relations in Views</h3>
+            <p>To access model relations in views, load them in your controller first using <code>with()</code>, <code>load()</code>, or <code>loadMissing()</code>. Once loaded, access them as properties.</p>
+            <pre><code>// Controller
+const user = await User.find(1);
+await user.load('posts');
+return res.view('users.show', { user });
+
+// View: resources/views/users/show.edge
+&#64;foreach(user.posts as post)
+    &lt;p&gt;&#123;&#123; post.title &#125;&#125;&lt;/p&gt;
+&#64;endforeach</code></pre>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- INERTIA.JS -->
+        <!-- ============================================================ -->
+        <section id="inertia">
+            <h2>Inertia.js — Modern SPAs</h2>
+            <p>LaraNode has out-of-the-box support for <strong>Inertia.js</strong>, letting you build modern single-page applications using React, Vue, or Svelte—all powered by your LaraNode controllers. No separate API required.</p>
+
+            <div class="tip-box">
+                <strong>Key idea:</strong> The server returns React/Vue component names + props instead of HTML. Inertia handles the client-side rendering, partial reloads, and history management automatically.
+            </div>
+
+            <h3>1. Install Dependencies</h3>
+            <pre><code>npm install @inertiajs/react react react-dom
+npm install --save-dev @vitejs/plugin-react vite</code></pre>
+
+            <h3>2. Enable in config/app.js</h3>
+            <pre><code>providers: [
+    require(base_path('vendor/laranode/framework/src/Support/Inertia/InertiaServiceProvider')),
+]</code></pre>
+
+            <h3>3. Configure Vite</h3>
+            <pre><code>// vite.config.js
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+    plugins: [react()],
+    build: {
+        outDir: 'public/build',
+        manifest: true,
+        rollupOptions: { input: 'resources/js/app.jsx' },
+    },
+});</code></pre>
+
+            <h3>4. Root Edge Template</h3>
+            <pre><code>&lt;!-- resources/views/app.edge --&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8" /&gt;
+    &lt;title inertia&gt;{{ config('app.name') }}&lt;/title&gt;
+    @vite('resources/js/app.jsx')
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;!-- Inertia mounts here — server injects the page payload --&gt;
+    &lt;div id="app" data-page="{!! jsonPage !!}"&gt;&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+            <h3>5. JavaScript Entry Point</h3>
+            <pre><code>// resources/js/app.jsx
+import { createRoot } from 'react-dom/client';
+import { createInertiaApp } from '@inertiajs/react';
+
+createInertiaApp({
+    resolve: (name) => resolvePageComponent(name, import.meta.glob('./Pages/**/*.jsx')),
+    setup({ el, App, props }) {
+        createRoot(el).render(&lt;App {...props} /&gt;);
+    },
+});
+
+function resolvePageComponent(path, modules) {
+    for (const filePath in modules) {
+        if (filePath.endsWith(path + '.jsx')) return modules[filePath];
+    }
+    throw new Error(`Page not found: ${path}`);
+}</code></pre>
+
+            <h3>Server-Side: Controller</h3>
+            <pre><code>// Return an Inertia response — renders resources/js/Pages/Posts/Index.jsx
+async index(req, res) {
+    const posts = await Post.with('author').paginate(15);
+    return res.inertia('Posts/Index', {
+        posts: posts.items,
+        meta: posts.toArray().meta,
+    });
+}
+
+// With flash message redirect
+async store(req, res) {
+    const post = await Post.create(req.validate({
+        title: 'required|string|max:255',
+        content: 'required|string',
+    }));
+    return res.redirect()
+        .route('posts.show', { id: post.id })
+        .with('success', 'Post created!');
+}</code></pre>
+
+            <h3>Client-Side: React Component</h3>
+            <pre><code>// resources/js/Pages/Posts/Index.jsx
+import { Link, useForm } from '@inertiajs/react';
+
+export default function PostsIndex({ posts, meta, flash }) {
+    return (
+        &lt;div&gt;
+            {flash.success &amp;&amp; &lt;div className="alert"&gt;{flash.success}&lt;/div&gt;}
+            &lt;h1&gt;Posts&lt;/h1&gt;
+            &lt;Link href="/posts/create"&gt;Create Post&lt;/Link&gt;
+
+            {posts.map(post =&gt; (
+                &lt;article key={post.id}&gt;
+                    &lt;h2&gt;&lt;Link href={`/posts/${post.id}`}&gt;{post.title}&lt;/Link&gt;&lt;/h2&gt;
+                    &lt;p&gt;By {post.author.name}&lt;/p&gt;
+                &lt;/article&gt;
+            ))}
+
+            {/* Pagination */}
+            {meta.current_page &gt; 1 &amp;&amp; &lt;Link href={`/posts?page=${meta.current_page - 1}`}&gt;Prev&lt;/Link&gt;}
+            &lt;span&gt;Page {meta.current_page} of {meta.last_page}&lt;/span&gt;
+            {meta.current_page &lt; meta.last_page &amp;&amp; &lt;Link href={`/posts?page=${meta.current_page + 1}`}&gt;Next&lt;/Link&gt;}
+        &lt;/div&gt;
+    );
+}</code></pre>
+
+            <h3>Form Handling with useForm</h3>
+            <pre><code>// resources/js/Pages/Posts/Create.jsx
+import { useForm } from '@inertiajs/react';
+
+export default function CreatePost({ categories }) {
+    const { data, setData, post, processing, errors } = useForm({
+        title: '', content: '', category_id: '',
+    });
+
+    return (
+        &lt;form onSubmit={e =&gt; { e.preventDefault(); post('/posts'); }}&gt;
+            &lt;input value={data.title} onChange={e =&gt; setData('title', e.target.value)} /&gt;
+            {errors.title &amp;&amp; &lt;span className="error"&gt;{errors.title}&lt;/span&gt;}
+
+            &lt;textarea value={data.content} onChange={e =&gt; setData('content', e.target.value)} /&gt;
+            {errors.content &amp;&amp; &lt;span className="error"&gt;{errors.content}&lt;/span&gt;}
+
+            &lt;button disabled={processing}&gt;Create Post&lt;/button&gt;
+        &lt;/form&gt;
+    );
+}</code></pre>
+
+            <h3>Shared Data (Global Props)</h3>
+            <pre><code>// app/Http/Middleware/HandleInertiaRequests.js
+class HandleInertiaRequests extends Middleware {
+    props(req, res) {
+        return {
+            auth: { user: req.user },
+            app: { name: config('app.name') },
+            flash: {
+                success: req.session.get('success'),
+                error:   req.session.get('error'),
+            },
+        };
+    }
+}
+
+// In any component
+import { usePage } from '@inertiajs/react';
+const { auth, flash } = usePage().props;</code></pre>
+        </section>
+
+        <section id="localization">
+            <h2>Localization</h2>
+            <p>LaraNode's localization features provide a convenient way to retrieve strings in various languages.</p>
+            <pre><code>// resources/lang/en/messages.js
+module.exports = {
+    welcome: 'Welcome'
+};
+
+// In view
+&#123;&#123; __('messages.welcome') &#125;&#125;</code></pre>
+        </section>
+
+        <!-- SECURITY -->
+        <section id="authentication">
+            <h2>Authentication</h2>
+            <p>LaraNode provides both session-based web authentication and Sanctum-style API token authentication out of the box.</p>
+
+            <h3>Session Authentication (Web)</h3>
+            <pre><code>// Protect routes with auth middleware
+Route.group({ middleware: ['auth'] }, () => {
+    Route.get('/dashboard', 'DashboardController&#64;index');
+});
+
+// Access the authenticated user
+async index(req, res) {
+    const user = req.user;
+    return res.view('dashboard', { user });
+}</code></pre>
+
+            <h3>API Token Authentication (Sanctum-style)</h3>
+            <pre><code>const HasApiTokens = use('laranode/Auth/Traits/HasApiTokens');
+
+class User extends HasApiTokens(Model) {
+    static table = 'users';
+}
+
+// Create a token
+const token = await user.createToken('api-token');
+return res.json({ token: token.plainTextToken });
+
+// Protect API routes
+Route.group({ middleware: ['auth:api'] }, () => {
+    Route.get('/user', (req, res) => res.json(req.user));
+});
+// Header: Authorization: Bearer 1|abc123...</code></pre>
+
+            <h3>Hashing &amp; Encryption</h3>
+            <pre><code>const Hash  = use('laranode/Support/Facades/Hash');
+const Crypt = use('laranode/Support/Facades/Crypt');
+
+// Hash a password
+const hashed = await Hash.make('my-password');
+const valid  = await Hash.check('my-password', hashed); // true
+
+// Encrypt / Decrypt
+const encrypted = Crypt.encrypt('sensitive-data');
+const decrypted = Crypt.decrypt(encrypted);</code></pre>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- AUTHORIZATION -->
+        <!-- ============================================================ -->
+        <section id="authorization">
+            <h2>Authorization</h2>
+            <p>LaraNode provides two primary ways to authorize actions: <strong>Gates</strong> (simple closures) and <strong>Policies</strong> (class-based logic tied to models). Authorization is the layer that answers <em>"What can you do?"</em> after authentication answers <em>"Who are you?"</em></p>
+
+            <h3>Gates</h3>
+            <p>Define gates in <code>app/Providers/AuthServiceProvider.js</code>:</p>
+            <pre><code>const Gate = use('laranode/Support/Facades/Gate');
+
+class AuthServiceProvider {
+    boot() {
+        // Simple gate
+        Gate.define('view-dashboard', (user) => user.is_admin);
+
+        // Gate with model parameter
+        Gate.define('edit-post', (user, post) => user.id === post.user_id);
+
+        // Async gate (database check)
+        Gate.define('view-team', async (user, team) => {
+            return await user.teams().where('team_id', team.id).exists();
+        });
+
+        // Admin bypass — runs before any gate check
+        Gate.before((user, ability) => {
+            if (user.is_admin) return true;
+        });
+    }
+}</code></pre>
+
+            <h3>Using Gates in Controllers</h3>
+            <pre><code>// Check and throw 403 automatically
+this.authorize('edit-post', post);
+
+// Check without throwing
+if (req.user.can('edit-post', post)) {
+    // ...
+}
+
+// Check denial
+if (req.user.cannot('delete-post', post)) {
+    return res.status(403).json({ error: 'Forbidden' });
+}</code></pre>
+
+            <h3>Policies</h3>
+            <p>Policies organize authorization for a specific model. Create one with:</p>
+            <pre><code>node artisan make:policy PostPolicy --model=Post</code></pre>
+            <pre><code>// app/Policies/PostPolicy.js
+class PostPolicy {
+    // Runs before every check — return true to bypass
+    before(user, ability) {
+        if (user.is_admin) return true;
+    }
+
+    viewAny(user) { return true; }
+
+    view(user, post) {
+        return post.is_published || user.id === post.user_id;
+    }
+
+    create(user) { return user.email_verified_at !== null; }
+
+    update(user, post) { return user.id === post.user_id; }
+
+    delete(user, post) { return user.id === post.user_id; }
+}
+
+module.exports = PostPolicy;</code></pre>
+
+            <h3>Registering Policies</h3>
+            <pre><code>// app/Providers/AuthServiceProvider.js
+const Post = use('App/Models/Post');
+const PostPolicy = use('App/Policies/PostPolicy');
+
+class AuthServiceProvider {
+    boot() {
+        Gate.policy(Post, PostPolicy);
+    }
+}</code></pre>
+
+            <h3>Using Policies in Controllers</h3>
+            <pre><code>class PostController extends Controller {
+    async show(req, res) {
+        const post = await Post.findOrFail(req.params.id);
+        this.authorize('view', post);        // Uses PostPolicy.view()
+        return res.view('posts.show', { post });
+    }
+
+    async update(req, res) {
+        const post = await Post.findOrFail(req.params.id);
+        this.authorize('update', post);      // Uses PostPolicy.update()
+        await post.update(req.validate({...}));
+        return res.redirect().route('posts.show', { id: post.id });
+    }
+}</code></pre>
+
+            <h3>Role-Based Authorization</h3>
+            <pre><code>// app/Http/Middleware/RequireRole.js
+module.exports = (requiredRole) => (req, res, next) => {
+    if (!req.user || req.user.role !== requiredRole) {
+        return res.status(403).json({ error: `Requires ${requiredRole} role` });
+    }
+    return next();
+};
+
+// routes/web.js
+Route.group({ middleware: [RequireRole('admin')] }, () => {
+    Route.resource('users', 'UserController');
+});</code></pre>
+
+            <table>
+                <thead><tr><th>Method</th><th>Description</th></tr></thead>
+                <tbody>
+                    <tr><td><code>Gate.define(name, fn)</code></td><td>Register a simple closure gate</td></tr>
+                    <tr><td><code>Gate.policy(Model, Policy)</code></td><td>Register a policy class for a model</td></tr>
+                    <tr><td><code>Gate.before(fn)</code></td><td>Run before all gate/policy checks</td></tr>
+                    <tr><td><code>Gate.after(fn)</code></td><td>Run after all gate/policy checks</td></tr>
+                    <tr><td><code>user.can(ability, model)</code></td><td>Returns true/false</td></tr>
+                    <tr><td><code>user.cannot(ability, model)</code></td><td>Inverse of <code>can()</code></td></tr>
+                    <tr><td><code>this.authorize(ability, model)</code></td><td>Throws 403 if unauthorized</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="security">
+            <h2>CSRF &amp; CORS</h2>
+            <p>LaraNode includes middleware to protect your application from cross-site request forgery and manage cross-origin resource sharing.</p>
+
+            <h3>CSRF Protection</h3>
+            <p>All POST/PUT/DELETE routes in the <code>web</code> middleware group are automatically protected. Use the <code>&#64;csrf</code> directive in your forms.</p>
+            <pre><code>&lt;form method="POST" action="/submit"&gt;
+    &#64;csrf
+    &lt;input name="title" /&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+
+            <h3>CORS</h3>
+            <pre><code>// config/cors.js
+module.exports = {
+    paths: ['api/*'],
+    allowed_methods: ['*'],
+    allowed_origins: ['https://yourfrontend.com'],
+    allowed_headers: ['Content-Type', 'Authorization'],
+};</code></pre>
+        </section>
+
+        <section id="events">
+            <h2>Events &amp; Listeners</h2>
+            <p>LaraNode provides a robust event dispatching system. Listeners are automatically resolved through the service container.</p>
+            <pre><code>const Event = use('laranode/Support/Facades/Event');
+
+// Dispatch an event
+Event.dispatch('OrderShipped', order);
+
+// Listen to an event dynamically
+Event.listen('OrderShipped', SendShipmentNotification);</code></pre>
+            <p>You can also register your listeners declaratively in <code>app/Providers/EventServiceProvider.js</code>.</p>
+        </section>
+
+        <section id="broadcasting">
+            <h2>Broadcasting</h2>
+            <p>Powered by Socket.io, LaraNode's broadcasting allows you to share your server-side events with your client-side JavaScript application in real-time.</p>
+            
+            <h3>ShouldBroadcast</h3>
+            <p>To broadcast an event, simply implement the <code>ShouldBroadcast</code> trait on your event class. LaraNode will automatically broadcast the event to the channels returned by the <code>broadcastOn</code> method.</p>
+            <pre><code>// app/Events/OrderShipped.js
+const ShouldBroadcast = use('laranode/Broadcasting/ShouldBroadcast');
+
+class OrderShipped extends ShouldBroadcast {
+    constructor(order) {
+        super();
+        this.order = order;
+    }
+
+    broadcastOn() {
+        return ['orders', `user.${this.order.user_id}`];
+    }
+
+    broadcastWith() {
+        return {
+            id: this.order.id,
+            status: this.order.status
+        };
+    }
+}</code></pre>
+
+            <h3>Manual Broadcasting</h3>
+            <p>You may also broadcast messages manually using the <code>Broadcast</code> facade.</p>
+            <pre><code>const Broadcast = use('laranode/Support/Facades/Broadcast');
+
+Broadcast.to('chat-room').emit('NewMessage', { text: 'Hello!' });</code></pre>
+        </section>
+
+        <section id="queues">
+            <h2>Queues</h2>
+            <p>LaraNode's queue system allows you to offload time-consuming tasks, such as sending emails, to a background process. Supports <code>database</code> and <code>redis</code> drivers.</p>
+
+            <h3>Creating Jobs</h3>
+            <p>By default, all jobs are stored in <code>app/Jobs</code>. A job is a simple class with a <code>handle</code> method.</p>
+            <pre><code>// app/Jobs/ProcessPodcast.js
+class ProcessPodcast {
+    constructor(podcast) {
+        this.podcast = podcast;
+    }
+
+    async handle() {
+        // Process the podcast...
+    }
+}</code></pre>
+
+            <h3>Dispatching Jobs</h3>
+            <pre><code>const Queue = use('laranode/Support/Facades/Queue');
+
+// Basic dispatch
+Queue.push(new ProcessPodcast(podcast));
+
+// Delayed dispatch
+Queue.later(60, new ProcessPodcast(podcast)); // 60 seconds delay</code></pre>
+
+            <h3>Running the Worker</h3>
+            <pre><code># Start the queue worker
+node artisan queue:work</code></pre>
+        </section>
+
+        <section id="cache">
+            <h2>Cache</h2>
+            <p>The Cache system provides a unified API for various drivers (file, memory).</p>
+            <pre><code>const Cache = use('laranode/Support/Facades/Cache');
+
+// Store an item
+await Cache.put('key', 'value', 60);
+
+// Retrieve &amp; store if empty
+const users = await Cache.remember('users', 60, async () => {
+    return await DB.table('users').get();
+});</code></pre>
+        </section>
+
+        <section id="storage">
+            <h2>Storage / Filesystem</h2>
+            <p>Provides a powerful filesystem abstraction matching Laravel's Storage API. Supports local disks and public asset serving.</p>
+            <pre><code>const Storage = use('laranode/Support/Facades/Storage');
+
+// Store a file with visibility
+await Storage.put('avatars/1.jpg', fileData, 'public');
+
+// Check visibility
+const visibility = await Storage.getVisibility('file.jpg'); // 'public' or 'private'
+
+// Get URL (requires storage:link)
+const url = Storage.url('avatars/1.jpg'); // '/storage/avatars/1.jpg'
+
+// Get Mime Type
+const type = await Storage.mimeType('document.pdf'); // 'application/pdf'</code></pre>
+
+            <h3>The Storage Link</h3>
+            <p>To make files in <code>storage/app/public</code> accessible from the web, you should create a symbolic link from <code>public/storage</code> to <code>storage/app/public</code>.</p>
+            <pre><code>node artisan storage:link</code></pre>
+        </section>
+
+        <section id="mail">
+            <h2>Mail</h2>
+            <p>LaraNode provides a clean, fluent API over the Nodemailer library, featuring class-based Mailables and automatic queuing.</p>
+            
+            <h3>Creating Mailables</h3>
+            <pre><code>// app/Mail/WelcomeEmail.js
+const Mailable = use('laranode/Mail/Mailable');
+const ShouldQueue = use('laranode/Contracts/Queue/ShouldQueue');
+
+class WelcomeEmail extends Mailable {
+    constructor(user) {
+        super();
+        this.user = user;
+    }
+
+    build() {
+        return this.from('hello@app.com', 'LaraNode')
+            .subject('Welcome to LaraNode!')
+            .view('emails.welcome', { user: this.user })
+            .attach(public_path('welcome-guide.pdf'));
+    }
+}</code></pre>
+
+            <h3>Sending Mail</h3>
+            <pre><code>const Mail = use('laranode/Support/Facades/Mail');
+
+await Mail.to(user.email).send(new WelcomeEmail(user));</code></pre>
+
+            <h3>Queued Mail</h3>
+            <p>If your Mailable implements the <code>ShouldQueue</code> contract, it will be automatically pushed to the queue instead of sending synchronously.</p>
+            <pre><code>class WelcomeEmail extends Mailable implements ShouldQueue { ... }</code></pre>
+        </section>
+
+        <section id="notifications">
+            <h2>Notifications</h2>
+            <p>LaraNode allows you to send notifications across a variety of delivery channels, including mail, database, and broadcast (WebSockets).</p>
+
+            <h3>The Notifiable Mixin</h3>
+            <p>Apply the <code>Notifiable</code> mixin to any model that should receive notifications.</p>
+            <pre><code>const Notifiable = use('laranode/Notifications/Notifiable');
+
+class User extends Notifiable(Model) { ... }
+
+// Then send notification directly
+await user.notify(new InvoicePaid(invoice));</code></pre>
+
+            <h3>Delivery Channels</h3>
+            <p>Define the <code>via</code> method on your notification class to specify the channels.</p>
+            <pre><code>class InvoicePaid extends Notification {
+    via(notifiable) {
+        return ['mail', 'database', 'broadcast'];
+    }
+
+    toMail(notifiable) {
+        return (new MailMessage)
+            .subject('Invoice Paid')
+            .line('Thank you for your payment!');
+    }
+
+    toDatabase(notifiable) {
+        return { invoice_id: this.invoice.id };
+    }
+
+    toBroadcast(notifiable) {
+        return { amount: this.invoice.total };
+    }
+}</code></pre>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- LOGGING -->
+        <!-- ============================================================ -->
+        <section id="logging">
+            <h2>Logging</h2>
+            <p>LaraNode's logging system supports multiple drivers and channels, so you can route log messages to files, daily rotating files, Slack, or multiple channels simultaneously.</p>
+
+            <h3>Configuration</h3>
+            <pre><code>// config/logging.js
+module.exports = {
+    default: env('LOG_CHANNEL', 'stack'),
+    level:   env('LOG_LEVEL', 'debug'),
+
+    channels: {
+        // Write to a single file
+        single: {
+            driver: 'single',
+            path: storage_path('logs/app.log'),
+            level: 'debug',
+        },
+
+        // Rotate daily, keep 14 days
+        daily: {
+            driver: 'daily',
+            path: storage_path('logs/app.log'),
+            level: 'debug',
+            days: 14,
+        },
+
+        // Send critical errors to Slack
+        slack: {
+            driver: 'slack',
+            url: env('LOG_SLACK_WEBHOOK_URL'),
+            username: 'LaraNode',
+            emoji: ':boom:',
+            level: 'critical',
+        },
+
+        // Fan out to multiple channels
+        stack: {
+            driver: 'stack',
+            channels: ['single', 'daily'],
+            ignore_exceptions: false,
+        },
+    },
+};</code></pre>
+
+            <h3>Basic Logging</h3>
+            <pre><code>const Log = use('laranode/Support/Facades/Log');
+
+Log.debug('Debug info', { query: sql });
+Log.info('User logged in', { userId: user.id });
+Log.notice('New registration');
+Log.warning('Disk space low', { used: '90%' });
+Log.error('Payment failed', { orderId, error: err.message });
+Log.critical('Database down');
+Log.alert('Security breach detected');
+Log.emergency('System unusable');</code></pre>
+
+            <h3>Contextual Logging</h3>
+            <p>Add persistent context to all log messages in a request:</p>
+            <pre><code>Log.withContext({
+    requestId: req.id,
+    userId: req.user?.id,
+    ip: req.ip,
+});
+
+Log.info('Action started');   // includes requestId, userId, ip automatically
+Log.info('Action completed'); // same context</code></pre>
+
+            <h3>Channel-Specific Logging</h3>
+            <pre><code>// Log to a specific channel
+Log.channel('slack').critical('Production error', { error: err });
+
+// Log to daily file only
+Log.channel('daily').info('Batch job completed', { processed: 1000 });</code></pre>
+
+            <h3>Logging in Controllers</h3>
+            <pre><code>class PaymentController extends Controller {
+    async checkout(req, res) {
+        Log.info('Checkout started', { userId: req.user.id, amount });
+
+        try {
+            const payment = await PaymentService.charge(req.user, amount);
+
+            Log.info('Payment successful', {
+                userId: req.user.id,
+                paymentId: payment.id,
+                amount: payment.amount,
+            });
+
+            return res.json({ success: true });
+        } catch (error) {
+            Log.error('Payment failed', {
+                userId: req.user.id,
+                error: error.message,
+                amount,
+            });
+
+            throw error;
+        }
+    }
+}</code></pre>
+
+            <table>
+                <thead><tr><th>Level</th><th>Priority</th><th>Use When</th></tr></thead>
+                <tbody>
+                    <tr><td><code>debug</code></td><td>100</td><td>Development diagnostics</td></tr>
+                    <tr><td><code>info</code></td><td>200</td><td>Normal operations (logins, orders)</td></tr>
+                    <tr><td><code>notice</code></td><td>250</td><td>Notable but expected events</td></tr>
+                    <tr><td><code>warning</code></td><td>300</td><td>Non-critical issues, slow queries</td></tr>
+                    <tr><td><code>error</code></td><td>400</td><td>Errors that need investigation</td></tr>
+                    <tr><td><code>critical</code></td><td>500</td><td>Critical failures, send alert</td></tr>
+                    <tr><td><code>alert</code></td><td>550</td><td>Must be acted on immediately</td></tr>
+                    <tr><td><code>emergency</code></td><td>600</td><td>System is unusable</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- LOG VIEWER -->
+        <!-- ============================================================ -->
+        <section id="log-viewer">
+            <h2>Log Viewer</h2>
+            <p>LaraNode ships with a built-in web-based log viewer accessible at <code>/logs</code>. It provides real-time log viewing, severity filtering, and expandable stack traces — no extra packages needed.</p>
+
+            <h3>Enable Log Viewer</h3>
+            <pre><code>// config/logging.js
+module.exports = {
+    allow_log_viewer: env('LOG_VIEWER_ENABLED', true),
+
+    log_viewer: {
+        middleware: ['web', 'auth'],   // Protect with auth
+        endpoint: '/logs',              // URL: yourapp.com/logs
+        max_file_size: 52428800,       // Max 50MB file
+    },
+};</code></pre>
+
+            <div class="info-box">Visit <strong>http://localhost:3333/logs</strong> to open the log viewer. Requires <code>auth</code> middleware by default.</div>
+
+            <h3>Log Viewer Features</h3>
+            <table>
+                <thead><tr><th>Feature</th><th>Description</th></tr></thead>
+                <tbody>
+                    <tr><td>File Browser</td><td>Sidebar listing all log files with sizes and dates</td></tr>
+                    <tr><td>Severity Filter</td><td>Filter by Error, Warning, Info, Debug — or show All</td></tr>
+                    <tr><td>Expandable Rows</td><td>Click any log entry to expand the full context and stack trace</td></tr>
+                    <tr><td>Pagination</td><td>Chunk-based pagination handles large log files efficiently</td></tr>
+                    <tr><td>Real-time Display</td><td>Shows the most recent log entries first</td></tr>
+                    <tr><td>Log Rotation</td><td>Access historical daily logs from the file browser</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Log Viewer Layout</h3>
+            <pre><code>http://yourapp.com/logs
+├── Sidebar (File Browser)
+│   ├── storage/logs/app.log       ← current
+│   ├── storage/logs/app-2026-04-23.log
+│   └── storage/logs/app-2026-04-22.log
+│
+├── Filter Bar  [ All | Error | Warning | Info | Debug ]
+│
+└── Log Entries
+    ├── [ERROR] 2026-04-24 10:30:45
+    │   Message: Database connection failed
+    │   Context: { "database": "mysql", "error": "timeout" }
+    │   Stack: [click to expand]
+    │
+    ├── [WARNING] 2026-04-24 10:25:30
+    │   Message: Slow query detected (512ms)
+    │
+    └── [INFO] 2026-04-24 10:20:15
+        Message: User login successful — userId: 42</code></pre>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- EXCEPTION HANDLING -->
+        <!-- ============================================================ -->
+        <section id="exceptions">
+            <h2>Exception Handling</h2>
+            <p>All exceptions are routed through <code>app/Exceptions/Handler.js</code>. You can register custom renderers and reporters there to control how errors are displayed and logged.</p>
+
+            <h3>The Handler</h3>
+            <pre><code>// app/Exceptions/Handler.js
+const BaseHandler = use('laranode/Foundation/Exceptions/Handler');
+
+class Handler extends BaseHandler {
+    constructor(app) {
+        super(app);
+
+        // These exceptions are NEVER reported/logged
+        this.dontReport = [
+            'ValidationError',
+            'AuthenticationException',
+        ];
+    }
+
+    register() {
+        // Custom renderer
+        this.renderable((error, req, res) => {
+            if (error.name === 'PaymentException') {
+                return res.status(402).json({
+                    error: 'Payment Failed',
+                    code: error.code,
+                    message: error.message,
+                });
+            }
+        });
+
+        // Custom reporter (send to Sentry, Datadog, etc.)
+        this.reportable((error) => {
+            if (env('SENTRY_DSN')) {
+                Sentry.captureException(error);
+            }
+        });
+    }
+}
+
+module.exports = Handler;</code></pre>
+
+            <h3>HTTP Exceptions</h3>
+            <pre><code">// Throw HTTP exceptions directly from controllers
+throw new NotFoundHttpException('Post not found');      // 404
+throw new ForbiddenHttpException('Unauthorized');        // 403
+throw new HttpException('Bad request', 400);             // any status
+
+// findOrFail automatically throws 404 if not found
+const post = await Post.findOrFail(req.params.id);</code></pre>
+
+            <h3>Custom Exceptions</h3>
+            <pre><code>// app/Exceptions/PaymentException.js
+class PaymentException extends Error {
+    constructor(message = 'Payment failed', code = 'PAYMENT_ERROR') {
+        super(message);
+        this.name = 'PaymentException';
+        this.code = code;
+        this.status = 422;
+        this.shouldReport = true;
+    }
+}
+
+module.exports = PaymentException;
+
+// Usage
+const PaymentException = use('App/Exceptions/PaymentException');
+
+try {
+    await chargeCard(data);
+} catch (error) {
+    throw new PaymentException('Card declined', 'CARD_DECLINED');
+}</code></pre>
+
+            <h3>Handling in Controllers</h3>
+            <pre><code>async checkout(req, res) {
+    try {
+        const order = await OrderService.createOrder(req.user, req.all());
+        return res.json({ success: true, order });
+    } catch (error) {
+        // Handle known error types explicitly
+        if (error.name === 'InsufficientBalanceException') {
+            return res.status(422).json({
+                error: 'Insufficient balance',
+                available: error.available,
+                required: error.required,
+            });
+        }
+        // Re-throw unknown errors to global handler
+        throw error;
+    }
+}</code></pre>
+
+            <h3>Error Response Format</h3>
+            <pre><code>// Development (APP_DEBUG=true)
+{
+    "error": "Server Error",
+    "message": "ENOENT: no such file",
+    "exception": "Error",
+    "file": "/app/Services/FileService.js",
+    "line": 45,
+    "stack": "Error: ENOENT: ..."
+}
+
+// Production (APP_DEBUG=false)
+{
+    "error": "Internal Server Error",
+    "message": "An error occurred while processing your request"
+}</code></pre>
+
+            <table>
+                <thead><tr><th>Exception</th><th>Status</th><th>Description</th></tr></thead>
+                <tbody>
+                    <tr><td><code>NotFoundHttpException</code></td><td>404</td><td>Resource not found</td></tr>
+                    <tr><td><code>ForbiddenHttpException</code></td><td>403</td><td>Authenticated but no permission</td></tr>
+                    <tr><td><code>AuthenticationException</code></td><td>401</td><td>Not authenticated</td></tr>
+                    <tr><td><code>ValidationError</code></td><td>422</td><td>Input validation failed</td></tr>
+                    <tr><td><code>HttpException</code></td><td>any</td><td>Generic HTTP exception with code</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- ADVANCED -->
+        <section id="artisan">
+            <h2>Artisan CLI</h2>
+            <p>Artisan is the command-line interface included with LaraNode. It provides a number of helpful commands that can assist you while you build your application. You can run any command using <code>node artisan</code>.</p>
+
+            <h3>Development</h3>
+            <pre><code># Start the development server
+node artisan serve
+
+# List all registered routes
+node artisan route:list</code></pre>
+
+            <h3>Make Commands (Code Generators)</h3>
+            <p>Generate boilerplate files for your application with the <code>make</code> commands.</p>
+            <pre><code># Generate a controller
+node artisan make:controller UserController
+
+# Generate a model
+node artisan make:model Post
+
+# Generate middleware
+node artisan make:middleware EnsureAdmin
+
+# Generate a migration
+node artisan make:migration create_posts_table
+
+# Generate a database seeder
+node artisan make:seeder UserSeeder
+
+# Generate a form request
+node artisan make:request StorePostRequest
+
+# Generate an API resource
+node artisan make:resource UserResource
+
+# Generate a custom artisan command
+node artisan make:command SendEmails
+
+# Generate a validation rule
+node artisan make:rule Uppercase</code></pre>
+
+            <h3>Database Commands</h3>
+            <pre><code># Run pending migrations
+node artisan migrate
+
+# Rollback the last batch of migrations
+node artisan migrate:rollback
+
+# Drop all tables and re-run all migrations
+node artisan migrate:fresh
+
+# Seed the database
+node artisan db:seed</code></pre>
+
+            <h3>Queue &amp; Scheduling</h3>
+            <pre><code># Process queued jobs
+node artisan queue:work
+
+# Run scheduled tasks
+node artisan schedule:run</code></pre>
+
+            <h3>Custom Commands</h3>
+            <p>Create your own commands in <code>app/Console/Commands/</code>. They are automatically registered when placed in that directory.</p>
+            <pre><code>// app/Console/Commands/SendEmails.js
+const Command = use('laranode/Foundation/Console/Command');
+
+class SendEmails extends Command {
+    get signature() {
+        return 'emails:send';
+    }
+
+    get description() {
+        return 'Send queued emails to all users';
+    }
+
+    async handle() {
+        this.info('Sending emails...');
+        // Your logic here
+        this.info('Done!');
+    }
+}
+
+module.exports = SendEmails;</code></pre>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- TINKER -->
+        <!-- ============================================================ -->
+        <section id="tinker">
+            <h2>Tinker — Interactive REPL</h2>
+            <p>Tinker is an interactive Node.js REPL that boots your entire application — including all models, facades, and helpers — so you can explore, debug, and prototype directly in the terminal.</p>
+
+            <pre><code>node artisan tinker</code></pre>
+
+            <div class="tip-box">
+                <strong>Top-level <code>await</code> is supported.</strong> All models from <code>app/Models/</code> are auto-loaded. Facades like <code>DB</code>, <code>Cache</code>, <code>Hash</code>, <code>Log</code>, and global helpers like <code>config()</code>, <code>env()</code> are available globally.
+            </div>
+
+            <h3>Example Session</h3>
+            <pre><code>$ node artisan tinker
+LaraNode Tinker v1.0 — Type .exit to quit
+
+# Query models directly
+>>> await User.first()
+User { id: 1, name: 'John Doe', email: 'john@example.com', ... }
+
+# Count records
+>>> await User.count()
+42
+
+>>> await User.where('role', 'admin').count()
+3
+
+# Create a record
+>>> await User.create({ name: 'Jane', email: 'jane@test.com', password: await Hash.make('secret') })
+User { id: 43, name: 'Jane', ... }
+
+# Use the DB facade
+>>> await DB.table('users').select('role').groupBy('role').get()
+[{ role: 'admin' }, { role: 'user' }, { role: 'author' }]
+
+# Check environment
+>>> env('APP_ENV')
+'local'
+
+>>> config('app.name')
+'LaraNode'
+
+# Inspect a relationship
+>>> const user = await User.with('posts').find(1)
+>>> user.posts.length
+5
+
+# Hash a password
+>>> await Hash.make('my-password')
+'$2b$10$...'
+
+# Use Cache
+>>> await Cache.put('test', 'hello', 60)
+>>> await Cache.get('test')
+'hello'</code></pre>
+
+            <h3>Useful Tinker Commands</h3>
+            <table>
+                <thead><tr><th>Command</th><th>Description</th></tr></thead>
+                <tbody>
+                    <tr><td><code>.exit</code></td><td>Exit the REPL</td></tr>
+                    <tr><td><code>.clear</code></td><td>Clear the REPL context</td></tr>
+                    <tr><td><code>.help</code></td><td>Show REPL commands</td></tr>
+                    <tr><td><code>await Model.first()</code></td><td>Query first record</td></tr>
+                    <tr><td><code>await Model.count()</code></td><td>Count records</td></tr>
+                    <tr><td><code>await Model.all()</code></td><td>Fetch all records</td></tr>
+                    <tr><td><code>await DB.table('name').get()</code></td><td>Raw query builder</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="testing">
+            <h2>Testing</h2>
+            <p>LaraNode provides a robust testing framework inspired by Laravel. It supports <code>artisan test</code> and provides a <code>TestCase</code> class for building expressive feature tests.</p>
+
+            <h3>Creating Tests</h3>
+            <pre><code>node artisan make:test UserTest --feature</code></pre>
+
+            <h3>The TestCase</h3>
+            <pre><code>// tests/Feature/UserTest.js
+const TestCase = use('laranode/Foundation/Testing/TestCase');
+
+class UserTest extends TestCase {
+    async test_can_visit_home_page() {
+        const response = await this.get('/');
+        response.assertStatus(200);
+        response.assertSee('LaraNode');
+    }
+
+    async test_can_create_user() {
+        const response = await this.post('/users', {
+            name: 'John Doe',
+            email: 'john@example.com'
+        });
+        response.assertRedirect('/users');
+    }
+}</code></pre>
+
+            <h3>Assertions</h3>
+            <p>Responses include many helpful assertions: <code>assertStatus</code>, <code>assertSee</code>, <code>assertJson</code>, <code>assertRedirect</code>, <code>assertSessionHasErrors</code>, and more.</p>
+
+            <h3>Running Tests</h3>
+            <pre><code>node artisan test</code></pre>
+        </section>
+
+        <section id="performance">
+            <h2>Performance &amp; Caching</h2>
+            <p>Optimize your application for production by caching performance-heavy components.</p>
+
+            <h3>Configuration Caching</h3>
+            <pre><code># Create cache
+node artisan config:cache
+
+# Clear cache
+node artisan config:clear</code></pre>
+
+            <h3>Route Caching</h3>
+            <pre><code># Create cache
+node artisan route:cache
+
+# Clear cache
+node artisan route:clear</code></pre>
+        </section>
+
+        <section id="http-client">
+            <h2>HTTP Client &amp; Macros</h2>
+            <p>LaraNode features an expressive HTTP client powered by native <code>fetch</code>, accessible via the <code>Http</code> Facade. It provides a fluent API for making HTTP requests to external services.</p>
+
+            <h3>Making Requests</h3>
+            <pre><code>const Http = use('laranode/Support/Facades/Http');
+
+// Basic requests
+const response = await Http.get('https://api.github.com/users/octocat');
+const data = await Http.post('https://api.example.com/users', { name: 'John' });
+
+// Fluent configuration
+await Http.withHeaders({ 'X-Custom': '123' })
+    .withToken('super-secret-token')
+    .acceptJson()
+    .get('/endpoint');
+
+// File uploads (multipart/form-data)
+await Http.attach('avatar', fileBuffer, 'image.png')
+    .post('/upload');</code></pre>
+
+            <h3>HTTP Macros</h3>
+            <p>Register reusable HTTP client configurations as macros in your <code>AppServiceProvider</code>, then use them anywhere — controllers, services, artisan commands, etc.</p>
+            <pre><code>// app/Providers/AppServiceProvider.js
+boot() {
+    Http.macro('github', function () {
+        return this.withBaseUrl('https://api.github.com')
+            .withHeaders({ 'Accept': 'application/vnd.github.v3+json' });
+    });
+}
+
+// In your controller or service
+const response = await Http.github().get('/users/Sabbir1993');</code></pre>
+        </section>
+
+        <section id="process">
+            <h2>The Lifecycle</h2>
+            <p>Understanding the LaraNode request lifecycle is key to building complex applications.</p>
+            <ol>
+                <li>Request enters <code>index.js</code> (or <code>server.js</code>)</li>
+                <li>Application is bootstrapped via <code>bootstrap/app.js</code></li>
+                <li>Service Providers are registered (<code>register()</code> methods)</li>
+                <li>Service Providers are booted (<code>boot()</code> methods)</li>
+                <li>HTTP Kernel handles the incoming request</li>
+                <li>Global Middleware executes (session, CSRF, CORS, etc.)</li>
+                <li>Route is resolved &amp; route-level Middleware executes</li>
+                <li>Controller method handles the request</li>
+                <li>Response is sent back to the client</li>
+            </ol>
+        </section>
+    </main>
+
+    <script>
+        // Scroll spy for active nav links
+        const sections  = document.querySelectorAll('section[id]');
+        const navLinks  = document.querySelectorAll('nav a');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === '#' + entry.target.id) {
+                            link.classList.add('active');
+                            // Scroll sidebar link into view
+                            link.scrollIntoView({ block: 'nearest' });
+                        }
+                    });
+                }
+            });
+        }, { rootMargin: '-10% 0px -80% 0px' });
+
+        sections.forEach(s => observer.observe(s));
+
+        // Sidebar search — filters nav links by text
+        const searchInput = document.getElementById('doc-search');
+        searchInput.addEventListener('input', () => {
+            const q = searchInput.value.toLowerCase().trim();
+            navLinks.forEach(link => {
+                const show = !q || link.textContent.toLowerCase().includes(q);
+                link.parentElement.style.display = show ? '' : 'none';
+            });
+            // Show all group headers if no query
+            document.querySelectorAll('nav h3').forEach(h => h.style.display = q ? 'none' : '');
+        });
+    </script>
+</body>
+</html>
