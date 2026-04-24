@@ -12,7 +12,7 @@ app.boot().then(async () => {
     const config = app.make('config');
 
     const port = config.get('app.port', 8000);
-    expressApp.listen(port, () => {
+    expressApp.listen(port, "0.0.0.0", () => {
         console.log(`\nLaraNode development server started: http://localhost:${port}`);
         console.log(`Environment: ${env('APP_ENV', 'local')}`);
     });
